@@ -100,6 +100,7 @@ describe('EntityGraphInlineContent', () => {
       expect(mockNavigateWithFlyout).toHaveBeenCalledWith(
         expect.objectContaining({
           isNewFlyoutEnabled,
+          openToolOnly: true,
         })
       );
     }

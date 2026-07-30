@@ -58,6 +58,7 @@ export const EntityGraphInlineContent: React.FC<
         searchSession,
         flyout,
         isNewFlyoutEnabled,
+        openToolOnly: true,
       });
     }
   }, [

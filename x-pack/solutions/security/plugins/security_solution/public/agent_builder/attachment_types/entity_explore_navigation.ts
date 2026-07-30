@@ -187,7 +187,8 @@ const getEntityToolDescriptor = (
  * its child, matching the v2 URL restore contract.
  */
 export const buildEntityFlyoutV2NavigationState = (
-  flyout: EntityAnalyticsFlyoutNavigationState
+  flyout: EntityAnalyticsFlyoutNavigationState,
+  { openToolOnly = false }: { openToolOnly?: boolean } = {}
 ): FlyoutV2UrlParamValue | null => {
   const entity = getEntityDescriptorContext(flyout.right);
   if (!entity) return null;
@@ -198,7 +199,13 @@ export const buildEntityFlyoutV2NavigationState = (
     origin: FLYOUT_ORIGIN.AI_CHAT_ENTITY_ATTACHMENT,
   });
   const entityDescriptor = withAiChatOrigin(entity.descriptor);
-  return toolDescriptor ? [withAiChatOrigin(toolDescriptor), entityDescriptor] : [entityDescriptor];
+  if (!toolDescriptor) {
+    return [entityDescriptor];
+  }
+  if (openToolOnly) {
+    return [withAiChatOrigin(toolDescriptor)];
+  }
+  return [withAiChatOrigin(toolDescriptor), entityDescriptor];
 };
 
 const getEntityAnalyticsNavigationPathWithFlyout = (
@@ -446,6 +453,7 @@ export const navigateToEntityAnalyticsWithFlyoutInApp = ({
   openSidebarConversation,
   searchSession,
   isNewFlyoutEnabled = false,
+  openToolOnly = false,
 }: {
   application: ApplicationStart;
   appId: string;
@@ -460,8 +468,14 @@ export const navigateToEntityAnalyticsWithFlyoutInApp = ({
   searchSession?: ISessionService;
   /** Whether to encode the destination using the new EUI flyout URL contract. */
   isNewFlyoutEnabled?: boolean;
+  /**
+   * When true with a tool panel, write only the tool descriptor (no entity child).
+   */
+  openToolOnly?: boolean;
 }): void => {
-  const descriptors = isNewFlyoutEnabled ? buildEntityFlyoutV2NavigationState(flyout) : null;
+  const descriptors = isNewFlyoutEnabled
+    ? buildEntityFlyoutV2NavigationState(flyout, { openToolOnly })
+    : null;
   const path = getEntityAnalyticsNavigationPathWithFlyout(flyout, isNewFlyoutEnabled, descriptors);
   if (path == null) {
     return;

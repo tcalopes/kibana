@@ -233,6 +233,38 @@ describe('entity_explore_navigation', () => {
         },
       ]);
     });
+
+    it('omits the entity child when openToolOnly is set', () => {
+      expect(
+        buildEntityFlyoutV2NavigationState(
+          {
+            preview: [],
+            left: {
+              id: 'host_details',
+              params: { path: { tab: 'graph_view' } },
+            },
+            right: {
+              id: 'host-panel',
+              params: {
+                hostName: 'web-01',
+                entityId: 'host:web-01',
+                scopeId: 'agent-builder-entity-card',
+              },
+            },
+          },
+          { openToolOnly: true }
+        )
+      ).toEqual([
+        {
+          kind: 'entityGraphView',
+          entityId: 'host:web-01',
+          scopeId: 'agent-builder-entity-card',
+          entityName: 'web-01',
+          entityType: 'host',
+          origin: FLYOUT_ORIGIN.AI_CHAT_ENTITY_ATTACHMENT,
+        },
+      ]);
+    });
   });
 
   describe('navigation helpers', () => {
